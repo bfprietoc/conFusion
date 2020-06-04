@@ -45,21 +45,29 @@
           <p matLine>
             <span>-- {{i.author}} {{i.date | date}}</span>  
           </p>
+        </mat-list-item>
+        <mat-list-item *ngIf="this.ratingForm.valid">
+          <h4 matLine>{{ratingForm.value.author}}</h4>
+          <p matLine>{{ratingForm.value.rating}} Stars </p>  
+          <p matLine>
+            <span>-- {{ratingForm.value.comment}} </span>  
+          </p>
         </mat-list-item>  
     </mat-list>
   </div>
 
+
   <div fxFlex="40" fxFlexOffset="20px" class="form-size">
-    <form novalidate [formGroup]="ratingForm" #rform="ngForm" >
-      <p>{{ratingForm.value | json}} {{ratingForm.status | json}} </p>
+    <p>{{ratingForm.value | json}} {{ratingForm.status | json}} </p>
+    <form novalidate [formGroup]="ratingForm" #rform="ngForm" (ngSubmit)="onSubmit()" >
       <p>
         <mat-form-field class="half-width">
-          <input matInput formControlName='name' placeholder="Name" type="text" required>
-          <mat-error *ngIf="formErrors.name">{{formErrors.name}}</mat-error>
+          <input matInput formControlName='author' placeholder="Name" type="text" required>
+          <mat-error *ngIf="formErrors.author">{{formErrors.author}}</mat-error>
         </mat-form-field> 
       </p> 
       <span>
-      <mat-slider thumbLabel tickInterval="1" min="1" max="5" step="1" value="3"></mat-slider>
+      <mat-slider formControlName="rating" thumbLabel tickInterval="1" min="1" max="5" step="1" value="3"></mat-slider>
       </span> 
       <p>
         <mat-form-field class="full-width">
@@ -67,7 +75,7 @@
           <mat-error *ngIf="formErrors.comment">{{formErrors.comment}}</mat-error>
         </mat-form-field>
       </p>
-      <button type="submit" mat-button class="background-primary text-floral-white">Submit</button>
+      <button type="submit" mat-button class="background-primary text-floral-white" [disabled]="ratingForm.invalid">Submit</button>
     </form>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit,ViewChild , Inject} from '@angular/core';
 import { Dish } from '../shared/dish';
 import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
@@ -20,19 +20,19 @@ export class DishdetailComponent implements OnInit {
   dishIds: string[];
   prev: string;
   next: string;
+  err: string;
   rating: Rating;
   ratingForm: FormGroup;
   @ViewChild('rform') ratingFormDirective;
 
 
-  formErrors={
-    'name':'',
+  formErrors= {
+    'author':'',
     'comment': ''
-
   }
 
   validationMessages = {
-    'name':{
+    'author':{
       'required': 'Author Name is required.',
       'minlength': 'Author Name must be least 2 character long.'
     },
@@ -49,8 +49,9 @@ export class DishdetailComponent implements OnInit {
   }
   createForm(){
     this.ratingForm = this.rt.group ({
-      name: ['', [Validators.required, Validators.minLength(2)]],
-      comment: ['', [Validators.required]]
+      author: ['', [Validators.required, Validators.minLength(2)]],
+      comment: ['', [Validators.required]],
+      rating:''
     });
     this.ratingForm.valueChanges
     .subscribe(data => this.onValueChanged(data));
@@ -92,5 +93,18 @@ export class DishdetailComponent implements OnInit {
   goBack(): void{
     this.location.back();
   }
+  onSubmit(){
+    var a = this.rating =this.ratingForm.value;
+    this.rating.date = new Date().toISOString();
+    console.log(a);
+    this.dish.comments.push(a);
+    this.ratingForm.reset({
+      author: '',
+      comment: '',
+      rating: ''
+    });
+    this.ratingFormDirective.resetForm();
+    }
+
 
 }

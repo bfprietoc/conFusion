@@ -1,5 +1,6 @@
 export class Rating {
-    name: string;
+    author: string;
     comment: string;
-    stars: number;
+    rating: number;
+    date: string;
 };
