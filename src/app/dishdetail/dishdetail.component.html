@@ -49,8 +49,32 @@
     </mat-list>
   </div>
 
+  <div fxFlex="40" fxFlexOffset="20px" class="form-size">
+    <form novalidate [formGroup]="ratingForm" #rform="ngForm" >
+      <p>{{ratingForm.value | json}} {{ratingForm.status | json}} </p>
+      <p>
+        <mat-form-field class="half-width">
+          <input matInput formControlName='name' placeholder="Name" type="text" required>
+          <mat-error *ngIf="formErrors.name">{{formErrors.name}}</mat-error>
+        </mat-form-field> 
+      </p> 
+      <span>
+      <mat-slider thumbLabel tickInterval="1" min="1" max="5" step="1" value="3"></mat-slider>
+      </span> 
+      <p>
+        <mat-form-field class="full-width">
+          <textarea matInput formControlName="comment" placeholder="Your Comment" rows=12></textarea>
+          <mat-error *ngIf="formErrors.comment">{{formErrors.comment}}</mat-error>
+        </mat-form-field>
+      </p>
+      <button type="submit" mat-button class="background-primary text-floral-white">Submit</button>
+    </form>
+  </div>
 </div>
- 	<!--
+   
+
+
+<!--
   <div fxFlex *ngIf="selectedDish">
 		<mat-card>
       <mat-card-header>
