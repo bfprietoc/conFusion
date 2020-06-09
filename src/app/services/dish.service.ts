@@ -4,7 +4,7 @@ import { DISHES } from '../shared/dishes';
 import { digest } from '@angular/compiler/src/i18n/digest';
 import { of,Observable } from 'rxjs';
 import { delay, map, catchError } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { baseURL } from '../shared/baseurl';
 import  { ProcessHTTPMsgService } from './process-httpmsg.service';
 
@@ -38,6 +38,15 @@ export class DishService {
   getDishIds(): Observable <string[] | any> {
     return this.getDishes().pipe(map(dishes => dishes.map(dish => dish.id)))
       .pipe(catchError(error => error));
+  }
+  putDish(dish: Dish): Observable<Dish>{
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'cpntent-Type' : 'apliction/json'
+      })
+    };
+    return this.http.put<Dish>(baseURL + 'dishes/' + dish.id, dish, httpOptions)
+    .pipe(catchError(this.processHTTPMsgService.handleError));
   }
   
   
