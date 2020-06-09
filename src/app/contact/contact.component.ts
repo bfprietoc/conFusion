@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Feedback, ContactType} from '../shared/feedback';
-import { flyInOut  } from '../animations/app.animation';
+import { visibility, flyInOut, expand } from '../animations/app.animation';
 import { FeedbackService } from '../services/feedback.service';
 
 
@@ -14,8 +14,9 @@ import { FeedbackService } from '../services/feedback.service';
     'style': 'display: block;'
     },
     animations: [
-      flyInOut()
-    
+      visibility(),
+      flyInOut(),
+      expand()
     ]
 })
 export class ContactComponent implements OnInit {
@@ -26,6 +27,9 @@ export class ContactComponent implements OnInit {
   feedbackcopy: Feedback;
   errMess: string;
   @ViewChild('fform') feedbackFormDirective;
+  isLoading: boolean;
+  isShowingResponse: boolean;
+  visibility = 'shown';
 
 
   formErrors={
@@ -60,6 +64,8 @@ export class ContactComponent implements OnInit {
   constructor(private fb: FormBuilder,
     private feedbackService: FeedbackService) {
     this.createForm();
+    this.isLoading = false;
+    this.isShowingResponse = false;
   }
 
   ngOnInit() {
@@ -101,6 +107,7 @@ export class ContactComponent implements OnInit {
   }
 
   onSubmit() {
+    this.isLoading = true;
     this.feedback = this.feedbackForm.value;
     console.log(this.feedback);
     this.feedbackcopy = this.feedback
@@ -108,7 +115,16 @@ export class ContactComponent implements OnInit {
       .subscribe(feedback => {
         this.feedback= feedback; this.feedbackcopy=feedback;
       },
-      errmess => {this.feedback = null; this.feedbackcopy=null; this.errMess = <any>errmess;})
+      errmess => {this.feedback = null; this.feedbackcopy=null; this.errMess = <any>errmess;
+      },
+      ()=>{
+        this.isShowingResponse = true;
+        setTimeout(()=>{
+          this.isShowingResponse = false;
+          this.isLoading = false;
+        }, 5000
+        );
+      });
     this.feedbackForm.reset({
       firstname: '',
       lastname: '',
