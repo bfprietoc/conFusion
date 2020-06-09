@@ -4,8 +4,9 @@ import { Params, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { DishService } from '../services/dish.service';
 import { switchMap } from 'rxjs/operators';
-import { Rating } from '../shared/rating';
+import { Comment } from '../shared/comment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { trigger, state, style, animate, transition} from '@angular/animations';
 
 @Component({
   selector: 'app-dishdetail',
@@ -21,9 +22,10 @@ export class DishdetailComponent implements OnInit {
   prev: string;
   next: string;
   err: string;
-  rating: Rating;
-  ratingForm: FormGroup;
-  @ViewChild('rform') ratingFormDirective;
+  comment: Comment;
+  commentForm: FormGroup;
+  errMess: string;
+  @ViewChild('cform') commentFormDirective;
 
 
   formErrors= {
@@ -44,23 +46,24 @@ export class DishdetailComponent implements OnInit {
   constructor(private dishService: DishService,
     private route: ActivatedRoute,
     private location: Location,
-    private rt: FormBuilder) {
+    private rt: FormBuilder,
+    @Inject('BaseURL') public BaseURL) {
     this.createForm();
   }
   createForm(){
-    this.ratingForm = this.rt.group ({
+    this.commentForm = this.rt.group ({
       author: ['', [Validators.required, Validators.minLength(2)]],
       comment: ['', [Validators.required]],
       rating:''
     });
-    this.ratingForm.valueChanges
+    this.commentForm.valueChanges
     .subscribe(data => this.onValueChanged(data));
     this.onValueChanged(); //reset form validation messages
   }
 
   onValueChanged(data?: any){
-    if (!this.ratingForm){return;}
-    const form = this.ratingForm;
+    if (!this.commentForm){return;}
+    const form = this.commentForm;
     for(const field in this.formErrors){
       if(this.formErrors.hasOwnProperty(field)){
         //limpiar errores anteriores (si hay)
@@ -81,7 +84,8 @@ export class DishdetailComponent implements OnInit {
   ngOnInit() {
     this.dishService.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
     this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id'])))
-    .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); });
+    .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); },
+      errmess => this.errMess = <any>errmess);
   }
   setPrevNext(dishId: string) {
     const index = this.dishIds.indexOf(dishId);
@@ -94,16 +98,16 @@ export class DishdetailComponent implements OnInit {
     this.location.back();
   }
   onSubmit(){
-    var a = this.rating =this.ratingForm.value;
-    this.rating.date = new Date().toISOString();
+    var a = this.comment =this.commentForm.value;
+    this.comment.date = new Date().toISOString();
     console.log(a);
     this.dish.comments.push(a);
-    this.ratingForm.reset({
+    this.commentForm.reset({
       author: '',
       comment: '',
       rating: ''
     });
-    this.ratingFormDirective.resetForm();
+    this.commentFormDirective.resetForm();
     }
 
 
